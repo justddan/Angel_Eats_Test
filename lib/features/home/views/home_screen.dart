@@ -21,10 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // LatLng? _currentPosition;
   final FocusNode _focusNode = FocusNode();
 
-  final double _initialSize = 0.3;
-  final double _minSize = 0.05;
+  final double _initialSize = 0.5;
+  final double _minSize = 0.0;
   final double _maxSize = 1;
-  double _currentSize = 0.3;
+  double _currentSize = 0.5;
 
   final DraggableScrollableController _dragController =
       DraggableScrollableController();
@@ -110,6 +110,18 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _toggleListView() {
+    setState(() {
+      if (_currentSize == 0) {
+        _dragController.animateTo(1,
+            duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+      } else {
+        _dragController.animateTo(0,
+            duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO
@@ -126,10 +138,10 @@ class _HomeScreenState extends State<HomeScreen> {
     double screenHeight = MediaQuery.of(context).size.height;
     double buttonBottom;
 
-    if (_currentSize <= 0.3) {
+    if (_currentSize <= 0.5) {
       buttonBottom = screenHeight * _currentSize;
     } else {
-      buttonBottom = screenHeight * 0.3;
+      buttonBottom = screenHeight * 0.5;
     }
 
     return Scaffold(
@@ -150,31 +162,31 @@ class _HomeScreenState extends State<HomeScreen> {
             //         myLocationButtonEnabled: false,
             //         zoomControlsEnabled: false,
             //       ),
-            Positioned(
-              top: 10,
-              left: 10,
-              right: 10,
-              child: TextField(
-                focusNode: _focusNode,
-                decoration: InputDecoration(
-                  // labelText: '주소 찾기',
-                  // labelStyle: const TextStyle(color: Colors.black),
-                  suffixIcon: const Icon(Icons.search, color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: Colors.black12, width: 1.0),
-                    borderRadius: BorderRadius.circular(2.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: Colors.black54, width: 2.0),
-                    borderRadius: BorderRadius.circular(2.0),
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: 10,
+            //   left: 10,
+            //   right: 10,
+            //   child: TextField(
+            //     focusNode: _focusNode,
+            //     decoration: InputDecoration(
+            //       // labelText: '주소 찾기',
+            //       // labelStyle: const TextStyle(color: Colors.black),
+            //       suffixIcon: const Icon(Icons.search, color: Colors.black),
+            //       enabledBorder: OutlineInputBorder(
+            //         borderSide:
+            //             const BorderSide(color: Colors.black12, width: 1.0),
+            //         borderRadius: BorderRadius.circular(2.0),
+            //       ),
+            //       focusedBorder: OutlineInputBorder(
+            //         borderSide:
+            //             const BorderSide(color: Colors.black54, width: 2.0),
+            //         borderRadius: BorderRadius.circular(2.0),
+            //       ),
+            //       fillColor: Colors.white,
+            //       filled: true,
+            //     ),
+            //   ),
+            // ),
             Positioned(
               bottom: buttonBottom < 50 ? 50 : buttonBottom,
               left: 20,
@@ -233,6 +245,9 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _toggleListView,
       ),
     );
   }
