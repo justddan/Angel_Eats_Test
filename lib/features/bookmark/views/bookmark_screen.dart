@@ -39,7 +39,7 @@ class BookmarkScreen extends StatelessWidget {
                 },
                 separatorBuilder: (context, index) {
                   return Divider(
-                    color: colorScheme.primary.withOpacity(.5),
+                    color: colorScheme.primary.withOpacity(.2),
                     thickness: 0.5,
                   );
                 },

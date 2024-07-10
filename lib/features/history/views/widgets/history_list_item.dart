@@ -1,5 +1,6 @@
 import 'package:angel_eats_test/constants/gaps.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HistoryListItem extends StatelessWidget {
   const HistoryListItem({
@@ -19,6 +20,11 @@ class HistoryListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
+    onHistoryDetailTap() {
+      // context.pushNamed(HistoryDetailScreen.routeName);
+      context.push("/history/historyDetail");
+    }
+
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -31,25 +37,30 @@ class HistoryListItem extends StatelessWidget {
                 "$deliveryDate • $deliveryState",
                 style: TextStyle(
                   fontSize: 12,
+                  height: 14.52 / 12,
                   color: Colors.black.withOpacity(.6),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 2,
-                  horizontal: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                  border: Border.all(
-                    color: colorScheme.primary.withOpacity(.2),
+              GestureDetector(
+                onTap: onHistoryDetailTap,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 2,
+                    horizontal: 5,
                   ),
-                ),
-                child: const Text(
-                  "주문상세",
-                  style: TextStyle(
-                    fontSize: 12,
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(.2),
+                    ),
+                  ),
+                  child: const Text(
+                    "주문상세",
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 14.52 / 12,
+                    ),
                   ),
                 ),
               ),
@@ -82,6 +93,7 @@ class HistoryListItem extends StatelessWidget {
                           storeName,
                           style: const TextStyle(
                             fontSize: 16,
+                            height: 14.52 / 12,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -117,6 +129,7 @@ class HistoryListItem extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
+                height: 14.52 / 12,
                 fontWeight: FontWeight.bold,
                 color: colorScheme.primary,
               ),

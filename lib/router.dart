@@ -1,4 +1,5 @@
 import 'package:angel_eats_test/common/widgets/main_navigation/main_navigation_screen.dart';
+import 'package:angel_eats_test/features/history/views/history_detail_screen.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
@@ -38,12 +39,12 @@ final router = GoRouter(
             final tab = state.pathParameters["tab"]!;
             return MainNavigationScreen(tab: tab);
           },
-          routes: const [
-            // GoRoute(
-            //   name: SearchScreen.routeName,
-            //   path: SearchScreen.routeURL,
-            //   builder: (context, state) => const SearchScreen(),
-            // ),
+          routes: [
+            GoRoute(
+              name: HistoryDetailScreen.routeName,
+              path: HistoryDetailScreen.routeURL,
+              builder: (context, state) => const HistoryDetailScreen(),
+            ),
           ],
         ),
         // 팝업 시도
