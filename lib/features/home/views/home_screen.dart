@@ -8,8 +8,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
-  static String routeName = "search";
-  static String routeURL = "search";
   const HomeScreen({super.key});
 
   @override

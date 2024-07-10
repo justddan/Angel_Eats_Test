@@ -29,7 +29,7 @@ final router = GoRouter(
         //   path: HomeScreen.routeURL,
         //   builder: (context, state) => const HomeScreen(
         //       // userInfo: state.extra as UserProfileModel,
-        //       ),
+        //   ),
         // ),
         GoRoute(
           path: "/:tab(home|bookmark|history|mypage)",
@@ -46,6 +46,14 @@ final router = GoRouter(
             // ),
           ],
         ),
+        // 팝업 시도
+        // GoRoute(
+        //   name: BookmarkScreen.routeName,
+        //   path: BookmarkScreen.routeURL,
+        //   builder: (context, state) => const BookmarkScreen(
+        //       // userInfo: state.extra as UserProfileModel,
+        //       ),
+        // ),
       ],
     )
   ],

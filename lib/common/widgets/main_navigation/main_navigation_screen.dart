@@ -2,7 +2,6 @@ import 'package:angel_eats_test/features/bookmark/views/bookmark_screen.dart';
 import 'package:angel_eats_test/features/history/views/history_screen.dart';
 import 'package:angel_eats_test/features/home/views/home_screen.dart';
 import 'package:angel_eats_test/features/user/views/mypage_screen.dart';
-import 'package:angel_eats_test/utils.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -39,10 +38,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   void _onTap(int index) {
-    FocusScope.of(context).unfocus();
     setState(() {
       _selectedIndex = index;
     });
+    // 팝업 시도
+    // switch (index) {
+    //   case 1:
+    //     context.pushNamed(BookmarkScreen.routeName);
+    //     break;
+    //   case 2:
+    //     context.pushNamed(HistoryScreen.routeName);
+    //     break;
+    // }
   }
 
   @override
@@ -80,15 +87,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.map_rounded),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark),
+              icon: Icon(Icons.favorite_border_rounded),
               label: 'Bookmark',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.history),
+              icon: Icon(Icons.receipt_rounded),
               label: 'History',
             ),
             BottomNavigationBarItem(
