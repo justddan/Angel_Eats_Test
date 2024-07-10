@@ -47,11 +47,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = isDarkMode(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: isDark ? Colors.black : Colors.white,
         body: Column(
           children: [
             Expanded(
@@ -85,11 +84,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.business),
+              icon: Icon(Icons.bookmark),
               label: 'Bookmark',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
+              icon: Icon(Icons.history),
               label: 'History',
             ),
             BottomNavigationBarItem(
@@ -98,7 +97,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
           ],
           currentIndex: _selectedIndex,
+          selectedItemColor: colorScheme.primary,
+          unselectedItemColor: colorScheme.onSurfaceVariant,
           onTap: _onTap,
+          backgroundColor: colorScheme.surface,
         ));
   }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:angel_eats_test/constants/gaps.dart';
 import 'package:angel_eats_test/features/home/views/search_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,6 +20,9 @@ class _HomeScreenState extends State<HomeScreen> {
   // GoogleMapController? _mapController;
   // LatLng? _initialPosition;
   // LatLng? _currentPosition;
+
+  Completer<NaverMapController> _mapController = Completer();
+
   final FocusNode _focusNode = FocusNode();
 
   final double _initialSize = 0.5;
@@ -51,6 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void _onMapReady(NaverMapController controller) {
+    if (_mapController.isCompleted) _mapController = Completer();
+
+    _mapController.complete(controller);
+  }
+
   Future<void> _getCurrentLocation() async {
     Position position = await _determinePosition();
     // setState(() {
@@ -59,7 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
   }
 
-  void _goToCurrentLocation() {
+  void _goToCurrentLocation() async {
+    final controller = await _mapController.future;
     // if (_currentPosition != null) {
     //   _mapController?.animateCamera(
     //     CameraUpdate.newCameraPosition(
@@ -145,51 +156,37 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: Stack(
           children: [
-            // _initialPosition == null
-            //     ? const Center(child: CircularProgressIndicator())
-            //     : GoogleMap(
-            //         onMapCreated: (controller) {
-            //           _mapController = controller;
-            //         },
-            //         initialCameraPosition: CameraPosition(
-            //           target: _initialPosition!,
-            //           zoom: 17,
-            //         ),
-            //         myLocationEnabled: true,
-            //         myLocationButtonEnabled: false,
-            //         zoomControlsEnabled: false,
-            //       ),
-            // Positioned(
-            //   top: 10,
-            //   left: 10,
-            //   right: 10,
-            //   child: TextField(
-            //     focusNode: _focusNode,
-            //     decoration: InputDecoration(
-            //       // labelText: '주소 찾기',
-            //       // labelStyle: const TextStyle(color: Colors.black),
-            //       suffixIcon: const Icon(Icons.search, color: Colors.black),
-            //       enabledBorder: OutlineInputBorder(
-            //         borderSide:
-            //             const BorderSide(color: Colors.black12, width: 1.0),
-            //         borderRadius: BorderRadius.circular(2.0),
-            //       ),
-            //       focusedBorder: OutlineInputBorder(
-            //         borderSide:
-            //             const BorderSide(color: Colors.black54, width: 2.0),
-            //         borderRadius: BorderRadius.circular(2.0),
-            //       ),
-            //       fillColor: Colors.white,
-            //       filled: true,
-            //     ),
-            //   ),
-            // ),
+            NaverMap(
+              options: const NaverMapViewOptions(
+                indoorEnable: false,
+                logoAlign: NLogoAlign.leftTop,
+                extent: NLatLngBounds(
+                  southWest: NLatLng(31.43, 122.37),
+                  northEast: NLatLng(44.35, 132.0),
+                ),
+              ),
+              // 지도 준비 완료
+              onMapReady: _onMapReady,
+              // 지도 클릭
+              onMapTapped: (point, latLng) {
+                _dragController.animateTo(0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeIn);
+              },
+              // 심볼 클릭
+              onSymbolTapped: (symbolInfo) {},
+              // 카메라 이동 중
+              onCameraChange: (reason, animated) {},
+              // 카메라 이동 끝
+              onCameraIdle: () {},
+            ),
             Positioned(
-              bottom: buttonBottom < 50 ? 50 : buttonBottom,
-              left: 20,
+              bottom: 15,
+              left: 15,
               child: GestureDetector(
                 onTap: _goToCurrentLocation,
                 child: Container(
