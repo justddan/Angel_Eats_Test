@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:angel_eats_test/constants/gaps.dart';
-import 'package:angel_eats_test/features/home/views/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,13 +13,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // GoogleMapController? _mapController;
-  // LatLng? _initialPosition;
-  // LatLng? _currentPosition;
-
   Completer<NaverMapController> _mapController = Completer();
-
-  final FocusNode _focusNode = FocusNode();
+  Position? _currentPosition;
 
   final double _initialSize = 0.5;
   final double _minSize = 0.0;
@@ -34,58 +27,81 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // _getLocationPermission();
     _getCurrentLocation();
     _dragController.addListener(_handleSheetHeightChange);
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        context.pushNamed(SearchScreen.routeName);
-      }
-    });
   }
 
   @override
   void dispose() {
-    // _mapController?.dispose();
     _dragController.removeListener(_handleSheetHeightChange);
     _dragController.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
+  Future<void> _getCurrentLocation() async {
+    Position position = await _determinePosition();
+    setState(() {
+      _currentPosition = position;
+    });
+
+    final NaverMapController controller = await _mapController.future;
+
+    controller.updateCamera(NCameraUpdate.scrollAndZoomTo(
+      target: NLatLng(position.latitude, position.longitude),
+      zoom: 15,
+    ));
+
+    final currentMarker = NMarker(
+      id: "0",
+      position: NLatLng(
+        position.latitude,
+        position.longitude,
+      ),
+    );
+
+    // currentMarker.setOnTapListener((NMarker marker) {
+    //   print("마커가 터치되었습니다. id: ${marker.info.id}");
+    // });
+
+    controller.addOverlay(currentMarker);
+  }
+
+  // 지도 준비 완료
   void _onMapReady(NaverMapController controller) {
     if (_mapController.isCompleted) _mapController = Completer();
 
     _mapController.complete(controller);
   }
 
-  Future<void> _getCurrentLocation() async {
-    Position position = await _determinePosition();
-    // setState(() {
-    //   _initialPosition = LatLng(position.latitude, position.longitude);
-    //   _currentPosition = LatLng(position.latitude, position.longitude);
-    // });
+  // 지도 클릭
+  void _onMapTapped(NPoint point, NLatLng latLng) {
+    _dragController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
   }
 
+  // 심볼 클릭
+  void _onSymbolTapped(NSymbolInfo symbolInfo) {}
+
+  // 카메라 이동 중
+  void _onCameraChange(NCameraUpdateReason reason, bool animated) {}
+
+  // 카메라 이동 끝
+  void _onCameraIdle() {}
+
   void _goToCurrentLocation() async {
-    final controller = await _mapController.future;
-    // if (_currentPosition != null) {
-    //   _mapController?.animateCamera(
-    //     CameraUpdate.newCameraPosition(
-    //       CameraPosition(target: _currentPosition!, zoom: 17),
-    //     ),
-    //   );
-    // } else {
-    //   _getCurrentLocation().then((_) {
-    //     if (_currentPosition != null) {
-    //       _mapController?.animateCamera(
-    //         CameraUpdate.newCameraPosition(
-    //           CameraPosition(target: _currentPosition!, zoom: 17),
-    //         ),
-    //       );
-    //     }
-    //   });
-    // }
+    Position position = await _determinePosition();
+    setState(() {
+      _currentPosition = position;
+    });
+
+    final NaverMapController controller = await _mapController.future;
+    controller.updateCamera(NCameraUpdate.scrollAndZoomTo(
+      target: NLatLng(position.latitude, position.longitude),
+      zoom: 15,
+    ));
   }
 
   Future<Position> _determinePosition() async {
@@ -114,6 +130,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleSheetHeightChange() {
+    if (_currentSize > _dragController.size) {
+      _dragController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
+    }
+
     setState(() {
       _currentSize = _dragController.size;
     });
@@ -122,11 +146,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void _toggleListView() {
     setState(() {
       if (_currentSize == 0) {
-        _dragController.animateTo(1,
-            duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+        _dragController.animateTo(
+          1,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeIn,
+        );
       } else {
-        _dragController.animateTo(0,
-            duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+        _dragController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeIn,
+        );
       }
     });
   }
@@ -134,54 +164,43 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     // TODO
-    // 1. 현재 위치 찾기 [V]
-    // 2. 현재 위치로 이동 [V]
-    // 3. 커스텀 마커 []
-    // 4. 검색창 [V]
-    // 5. 검색창 밑에 칩 스크롤 뷰 []
-    // 6. 위로 올라오는 모달창 [V]
-    //   6-1. 마커가 클릭이 안되어 있을 시, 가게 리스트 페이지 []
-    //   6-2. 마커가 클릭이 되어 있을 시, 가게 정보 페이지 []
-    // 7. 일정 스크롤 되었을떄 현재 위치로 이동하는 버튼 사라지기 [V]
-
-    double screenHeight = MediaQuery.of(context).size.height;
-    double buttonBottom;
-
-    if (_currentSize <= 0.5) {
-      buttonBottom = screenHeight * _currentSize;
-    } else {
-      buttonBottom = screenHeight * 0.5;
-    }
+    // 1. 현재 위치 커스텀 마커
+    // 2. 식당 커스텀 마커
+    //  (1) 목업 만들기
+    // 3. FloatingActionButton 커스텀
+    // 4. 식당 커스텀 마커 클릭 이벤트
+    // 5. DraggableScrollableSheet에서 조금만 내려도 시트 닫기
+    // 6. 마커 줌 레벨 범위 정하기
 
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
         child: Stack(
           children: [
-            NaverMap(
-              options: const NaverMapViewOptions(
-                indoorEnable: false,
-                logoAlign: NLogoAlign.leftTop,
-                extent: NLatLngBounds(
-                  southWest: NLatLng(31.43, 122.37),
-                  northEast: NLatLng(44.35, 132.0),
-                ),
-              ),
-              // 지도 준비 완료
-              onMapReady: _onMapReady,
-              // 지도 클릭
-              onMapTapped: (point, latLng) {
-                _dragController.animateTo(0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeIn);
-              },
-              // 심볼 클릭
-              onSymbolTapped: (symbolInfo) {},
-              // 카메라 이동 중
-              onCameraChange: (reason, animated) {},
-              // 카메라 이동 끝
-              onCameraIdle: () {},
-            ),
+            _currentPosition == null
+                ? const Center(child: CircularProgressIndicator())
+                : NaverMap(
+                    options: NaverMapViewOptions(
+                      initialCameraPosition: NCameraPosition(
+                        target: NLatLng(
+                          _currentPosition!.latitude,
+                          _currentPosition!.longitude,
+                        ),
+                        zoom: 15,
+                      ),
+                      indoorEnable: false,
+                      logoAlign: NLogoAlign.leftTop,
+                      extent: const NLatLngBounds(
+                        southWest: NLatLng(31.43, 122.37),
+                        northEast: NLatLng(44.35, 132.0),
+                      ),
+                    ),
+                    onMapReady: _onMapReady,
+                    onMapTapped: _onMapTapped,
+                    onSymbolTapped: _onSymbolTapped,
+                    onCameraChange: _onCameraChange,
+                    onCameraIdle: _onCameraIdle,
+                  ),
             Positioned(
               bottom: 15,
               left: 15,
