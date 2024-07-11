@@ -25,7 +25,7 @@ class AngelEatsTestApp extends StatelessWidget {
       title: 'AngelEatsTest',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
     );
   }

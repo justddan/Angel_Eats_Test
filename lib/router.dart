@@ -1,4 +1,5 @@
 import 'package:angel_eats_test/common/widgets/main_navigation/main_navigation_screen.dart';
+import 'package:angel_eats_test/features/detail/views/detail_screen.dart';
 import 'package:angel_eats_test/features/history/views/history_detail_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,6 +47,11 @@ final router = GoRouter(
               builder: (context, state) => const HistoryDetailScreen(),
             ),
           ],
+        ),
+        GoRoute(
+          name: DetailScreen.routeName,
+          path: DetailScreen.routeURL,
+          builder: (context, state) => const DetailScreen(),
         ),
         // 팝업 시도
         // GoRoute(

@@ -1,5 +1,7 @@
 import 'package:angel_eats_test/features/bookmark/views/widgets/bookmark_list_item.dart';
+import 'package:angel_eats_test/features/detail/views/detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class BookmarkScreen extends StatelessWidget {
   static String routeName = "bookmark";
@@ -10,6 +12,10 @@ class BookmarkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    goDetailScreen() {
+      context.pushNamed(DetailScreen.routeName);
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -27,14 +33,17 @@ class BookmarkScreen extends StatelessWidget {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  return BookmarkListItem(
-                    storeName: "상호명 $index",
-                    reviewPoint: "5.0",
-                    reviewCount: "3",
-                    recommendMenu: "추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴",
-                    deliveryTime: "36분~51분",
-                    deliveryTip: "0~3,800원",
-                    minimumPrice: "5,000원",
+                  return InkWell(
+                    onTap: goDetailScreen,
+                    child: BookmarkListItem(
+                      storeName: "상호명 $index",
+                      reviewPoint: "5.0",
+                      reviewCount: "3",
+                      recommendMenu: "추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴추천메뉴",
+                      deliveryTime: "36분~51분",
+                      deliveryTip: "0~3,800원",
+                      minimumPrice: "5,000원",
+                    ),
                   );
                 },
                 separatorBuilder: (context, index) {
