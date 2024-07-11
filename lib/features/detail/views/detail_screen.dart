@@ -1,3 +1,4 @@
+import 'package:angel_eats_test/constants/gaps.dart';
 import 'package:flutter/material.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -37,6 +38,7 @@ class _DetailScreenState extends State<DetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     bool isAppBarCollapsed = _scrollPosition >= 144;
     return Scaffold(
       body: CustomScrollView(
@@ -44,6 +46,7 @@ class _DetailScreenState extends State<DetailScreen>
         physics: const ClampingScrollPhysics().applyTo(const NoScrollPhysics()),
         slivers: [
           SliverAppBar(
+            centerTitle: false,
             title: Text(
               '상호명',
               style: TextStyle(
@@ -82,17 +85,86 @@ class _DetailScreenState extends State<DetailScreen>
             pinned: true,
           ),
           SliverToBoxAdapter(
-            child: Container(
-              height: 800.0,
-              color: Colors.green,
-              child: const Center(
-                child: Text(
-                  '정보 화면',
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Column(
+                    children: [
+                      const Text(
+                        "상호명",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Gaps.v10,
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.star_rounded,
+                            color: Colors.amber,
+                            size: 24,
+                          ),
+                          Gaps.h5,
+                          Icon(
+                            Icons.star_rounded,
+                            color: Colors.amber,
+                            size: 24,
+                          ),
+                          Gaps.h5,
+                          Icon(
+                            Icons.star_rounded,
+                            color: Colors.amber,
+                            size: 24,
+                          ),
+                          Gaps.h5,
+                          Icon(
+                            Icons.star_rounded,
+                            color: Colors.amber,
+                            size: 24,
+                          ),
+                          Gaps.h5,
+                          Icon(
+                            Icons.star_rounded,
+                            color: Colors.amber,
+                            size: 24,
+                          ),
+                          Gaps.h5,
+                          Text(
+                            "5.0",
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Gaps.v10,
+                      IntrinsicHeight(
+                        child: DefaultTextStyle(
+                          style: TextStyle(
+                            color: colorScheme.primary.withOpacity(.5),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text("최근리뷰 871"),
+                              VerticalDivider(
+                                color: colorScheme.primary.withOpacity(.2),
+                              ),
+                              const Text("최근사장님댓글 112"),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                ),
+                  const Row(
+                    children: [],
+                  )
+                ],
               ),
             ),
           ),
