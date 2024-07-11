@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:angel_eats_test/constants/gaps.dart';
+import 'package:angel_eats_test/features/home/views/widgets/draggable_sheet_view.dart';
+import 'package:angel_eats_test/features/home/views/widgets/naver_map_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -13,13 +14,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Completer<NaverMapController> _mapController = Completer();
+  final Completer<NaverMapController> _mapController = Completer();
   Position? _currentPosition;
-
-  final double _initialSize = 0.5;
-  final double _minSize = 0.0;
-  final double _maxSize = 1;
-  double _currentSize = 0.5;
 
   final DraggableScrollableController _dragController =
       DraggableScrollableController();
@@ -28,12 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _getCurrentLocation();
-    _dragController.addListener(_handleSheetHeightChange);
   }
 
   @override
   void dispose() {
-    _dragController.removeListener(_handleSheetHeightChange);
     _dragController.dispose();
     super.dispose();
   }
@@ -65,31 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     controller.addOverlay(currentMarker);
   }
-
-  // 지도 준비 완료
-  void _onMapReady(NaverMapController controller) {
-    if (_mapController.isCompleted) _mapController = Completer();
-
-    _mapController.complete(controller);
-  }
-
-  // 지도 클릭
-  void _onMapTapped(NPoint point, NLatLng latLng) {
-    _dragController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeIn,
-    );
-  }
-
-  // 심볼 클릭
-  void _onSymbolTapped(NSymbolInfo symbolInfo) {}
-
-  // 카메라 이동 중
-  void _onCameraChange(NCameraUpdateReason reason, bool animated) {}
-
-  // 카메라 이동 끝
-  void _onCameraIdle() {}
 
   void _goToCurrentLocation() async {
     Position position = await _determinePosition();
@@ -129,36 +98,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void _handleSheetHeightChange() {
-    if (_currentSize > _dragController.size) {
+  void _toggleListView() {
+    if (_dragController.size == 0) {
+      _dragController.animateTo(
+        1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
+    } else {
       _dragController.animateTo(
         0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
       );
     }
-
-    setState(() {
-      _currentSize = _dragController.size;
-    });
-  }
-
-  void _toggleListView() {
-    setState(() {
-      if (_currentSize == 0) {
-        _dragController.animateTo(
-          1,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeIn,
-        );
-      } else {
-        _dragController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeIn,
-        );
-      }
-    });
   }
 
   @override
@@ -179,27 +132,10 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             _currentPosition == null
                 ? const Center(child: CircularProgressIndicator())
-                : NaverMap(
-                    options: NaverMapViewOptions(
-                      initialCameraPosition: NCameraPosition(
-                        target: NLatLng(
-                          _currentPosition!.latitude,
-                          _currentPosition!.longitude,
-                        ),
-                        zoom: 15,
-                      ),
-                      indoorEnable: false,
-                      logoAlign: NLogoAlign.leftTop,
-                      extent: const NLatLngBounds(
-                        southWest: NLatLng(31.43, 122.37),
-                        northEast: NLatLng(44.35, 132.0),
-                      ),
-                    ),
-                    onMapReady: _onMapReady,
-                    onMapTapped: _onMapTapped,
-                    onSymbolTapped: _onSymbolTapped,
-                    onCameraChange: _onCameraChange,
-                    onCameraIdle: _onCameraIdle,
+                : NaverMapView(
+                    controller: _mapController,
+                    currentPosition: _currentPosition,
+                    dragController: _dragController,
                   ),
             Positioned(
               bottom: 15,
@@ -219,44 +155,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            DraggableScrollableSheet(
+            DraggableSheetView(
               controller: _dragController,
-              initialChildSize: _initialSize,
-              minChildSize: _minSize,
-              maxChildSize: _maxSize,
-              builder: (context, scrollController) {
-                return Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                    color: Colors.white,
-                  ),
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            height: 7,
-                            decoration: const BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Colors.amber,
-                            ),
-                          ),
-                          Gaps.v10,
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            )
+            ),
           ],
         ),
       ),
