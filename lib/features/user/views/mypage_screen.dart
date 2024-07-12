@@ -1,5 +1,7 @@
 import 'package:angel_eats_test/constants/gaps.dart';
+import 'package:angel_eats_test/features/edit/views/edit_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MyPageScreen extends StatelessWidget {
   const MyPageScreen({super.key});
@@ -7,6 +9,10 @@ class MyPageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    goEditSceen() {
+      context.pushNamed(EditScreen.routeName);
+    }
 
     return Scaffold(
         appBar: AppBar(
@@ -49,29 +55,32 @@ class MyPageScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "고마운분,",
-                              style: TextStyle(
-                                fontSize: 20,
+                        GestureDetector(
+                          onTap: goEditSceen,
+                          child: const Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "고마운분,",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
                               ),
-                            ),
-                            Gaps.h2,
-                            Text(
-                              "닉네임",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                              Gaps.h2,
+                              Text(
+                                "닉네임",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            Gaps.h2,
-                            Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 20,
-                            ),
-                          ],
+                              Gaps.h2,
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 20,
+                              ),
+                            ],
+                          ),
                         ),
                         Gaps.v10,
                         IntrinsicHeight(

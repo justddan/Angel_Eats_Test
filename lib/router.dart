@@ -1,5 +1,6 @@
 import 'package:angel_eats_test/common/widgets/main_navigation/main_navigation_screen.dart';
 import 'package:angel_eats_test/features/detail/views/detail_screen.dart';
+import 'package:angel_eats_test/features/edit/views/edit_screen.dart';
 import 'package:angel_eats_test/features/history/views/history_detail_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -52,6 +53,11 @@ final router = GoRouter(
           name: DetailScreen.routeName,
           path: DetailScreen.routeURL,
           builder: (context, state) => const DetailScreen(),
+        ),
+        GoRoute(
+          name: EditScreen.routeName,
+          path: EditScreen.routeURL,
+          builder: (context, state) => const EditScreen(),
         ),
         // 팝업 시도
         // GoRoute(
