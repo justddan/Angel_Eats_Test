@@ -6,6 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 
+class MarkerModel {
+  final String id;
+  final double lat;
+  final double lng;
+  final String category;
+
+  MarkerModel({
+    required this.id,
+    required this.lat,
+    required this.lng,
+    required this.category,
+  });
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -15,10 +29,27 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final Completer<NaverMapController> _mapController = Completer();
-  Position? _currentPosition;
+  Position? currentPosition;
+
+  // Set<NAddableOverlay> overlays = {};
 
   final DraggableScrollableController _dragController =
       DraggableScrollableController();
+
+  List<MarkerModel> mockMarkerData = [
+    MarkerModel(
+      id: "marker-1",
+      category: "cafe",
+      lat: 37.56,
+      lng: 126.962847,
+    ),
+    MarkerModel(
+      id: "marker-2",
+      category: "cafe",
+      lat: 37.56,
+      lng: 126.96284784,
+    ),
+  ];
 
   @override
   void initState() {
@@ -35,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _getCurrentLocation() async {
     Position position = await _determinePosition();
     setState(() {
-      _currentPosition = position;
+      currentPosition = position;
     });
 
     final NaverMapController controller = await _mapController.future;
@@ -45,12 +76,21 @@ class _HomeScreenState extends State<HomeScreen> {
       zoom: 15,
     ));
 
+    if (!mounted) return;
+
+    final iconImage = await NOverlayImage.fromWidget(
+      widget: const Icon(Icons.location_on),
+      size: const Size(24, 24),
+      context: context,
+    );
+
     final currentMarker = NMarker(
       id: "0",
       position: NLatLng(
         position.latitude,
         position.longitude,
       ),
+      icon: iconImage,
     );
 
     // currentMarker.setOnTapListener((NMarker marker) {
@@ -58,12 +98,16 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
 
     controller.addOverlay(currentMarker);
+
+    NLatLngBounds mapBounds = await controller.getContentBounds();
+
+    createMarkers(mapBounds);
   }
 
   void _goToCurrentLocation() async {
     Position position = await _determinePosition();
     setState(() {
-      _currentPosition = position;
+      currentPosition = position;
     });
 
     final NaverMapController controller = await _mapController.future;
@@ -114,6 +158,110 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // 지도 준비 완료
+  void onMapReady(NaverMapController controller) {
+    _mapController.complete(controller);
+  }
+
+  // 지도 클릭
+  void onMapTapped(NPoint point, NLatLng latLng) {
+    _dragController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
+  }
+
+  // 심볼 클릭
+  void onSymbolTapped(NSymbolInfo symbolInfo) {}
+
+  // 카메라 이동 중
+  void onCameraChange(NCameraUpdateReason reason, bool animated) {}
+
+  // 카메라 이동 끝
+  void onCameraIdle() async {
+    final NaverMapController controller = await _mapController.future;
+
+    // 지도 범위
+    // southWest : 남서 위경도
+    // northEast : 북동 위경도
+    NLatLngBounds mapBounds = await controller.getContentBounds();
+    // print(mapBounds);
+
+    createMarkers(mapBounds);
+  }
+
+  void createMarkers(NLatLngBounds mapBounds) async {
+    final NaverMapController controller = await _mapController.future;
+
+    // 생성할 마커 좌표 및 정보 API 호출
+
+    // 범위 안의 마커들을 생성
+    List<Future<NMarker>> modifiedList = mockMarkerData.map((mapInfo) async {
+      final marker = NMarker(
+        id: mapInfo.id,
+        position: NLatLng(
+          mapInfo.lat,
+          mapInfo.lng,
+        ),
+        icon: await _getOverlayImage(mapInfo.category),
+      );
+
+      // 마커 클릭 이벤트 설정
+      marker.setOnTapListener((NMarker marker) {
+        print("마커가 클릭되었다!");
+      });
+
+      return marker;
+    }).toList();
+
+    List<NMarker> results = await Future.wait(modifiedList);
+
+    Set<NMarker> overlays = results.toSet();
+
+    controller.addOverlayAll(overlays);
+  }
+
+  Future<NOverlayImage> _getOverlayImage(String category) async {
+    // 카테고리 종류 API 호출 후 categories에 넣기
+    final List<String> categories = [
+      "cafe",
+      "fastfood",
+      "dining",
+      "drink",
+    ];
+
+    int categoryNum = categories.indexOf(category);
+
+    // 해당하는 asset 사진 넣기
+    final List<Widget> icons = [
+      const Icon(
+        Icons.emoji_food_beverage_rounded,
+        color: Colors.red,
+      ),
+      const Icon(
+        Icons.fastfood,
+        color: Colors.red,
+      ),
+      const Icon(
+        Icons.local_dining,
+        color: Colors.red,
+      ),
+      const Icon(
+        Icons.local_drink,
+        color: Colors.red,
+      ),
+    ];
+
+    final iconImage = await NOverlayImage.fromWidget(
+      widget: icons[categoryNum],
+      size: const Size(24, 24),
+      context: context,
+    );
+
+    return iconImage;
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO
@@ -130,12 +278,15 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            _currentPosition == null
+            currentPosition == null
                 ? const Center(child: CircularProgressIndicator())
                 : NaverMapView(
-                    controller: _mapController,
-                    currentPosition: _currentPosition,
-                    dragController: _dragController,
+                    currentPosition: currentPosition,
+                    onMapReady: onMapReady,
+                    onMapTapped: onMapTapped,
+                    onSymbolTapped: onSymbolTapped,
+                    onCameraChange: onCameraChange,
+                    onCameraIdle: onCameraIdle,
                   ),
             Positioned(
               bottom: 15,

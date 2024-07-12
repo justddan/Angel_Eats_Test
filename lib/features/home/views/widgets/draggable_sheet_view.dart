@@ -29,8 +29,8 @@ class _DraggableSheetViewState extends State<DraggableSheetView> {
         return Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+              topLeft: Radius.circular(5),
+              topRight: Radius.circular(5),
             ),
             color: Colors.white,
           ),
