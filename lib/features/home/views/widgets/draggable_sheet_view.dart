@@ -1,4 +1,5 @@
 import 'package:angel_eats_test/constants/gaps.dart';
+import 'package:angel_eats_test/features/home/views/widgets/draggable_sheet_card.dart';
 import 'package:flutter/material.dart';
 
 class DraggableSheetView extends StatefulWidget {
@@ -50,6 +51,15 @@ class _DraggableSheetViewState extends State<DraggableSheetView> {
                     ),
                   ),
                   Gaps.v10,
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return const DraggableSheetCard();
+                    },
+                    separatorBuilder: (context, index) => Gaps.v10,
+                    itemCount: 10,
+                  ),
                 ],
               ),
             ),

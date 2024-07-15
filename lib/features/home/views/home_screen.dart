@@ -30,11 +30,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final Completer<NaverMapController> _mapController = Completer();
   Position? currentPosition;
+  NMarker? _selectedMarker;
 
   // Set<NAddableOverlay> overlays = {};
 
   final DraggableScrollableController _dragController =
       DraggableScrollableController();
+  double sheetPosition = 0.5;
 
   List<MarkerModel> mockMarkerData = [
     MarkerModel(
@@ -46,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     MarkerModel(
       id: "marker-2",
       category: "cafe",
-      lat: 37.56,
+      lat: 37.54,
       lng: 126.96284784,
     ),
   ];
@@ -167,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void onMapTapped(NPoint point, NLatLng latLng) {
     _dragController.animateTo(
       0,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 100),
       curve: Curves.easeIn,
     );
   }
@@ -194,6 +196,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void createMarkers(NLatLngBounds mapBounds) async {
     final NaverMapController controller = await _mapController.future;
 
+    Set<NMarker> overlays = {};
+
     // 생성할 마커 좌표 및 정보 API 호출
 
     // 범위 안의 마커들을 생성
@@ -208,8 +212,34 @@ class _HomeScreenState extends State<HomeScreen> {
       );
 
       // 마커 클릭 이벤트 설정
-      marker.setOnTapListener((NMarker marker) {
-        print("마커가 클릭되었다!");
+      marker.setOnTapListener((NMarker marker) async {
+        final iconImage = await NOverlayImage.fromWidget(
+          widget: const Icon(
+            Icons.emoji_nature,
+            color: Colors.green,
+          ),
+          size: const Size(24, 24),
+          context: context,
+        );
+
+        updateMarker(
+            overlays,
+            NMarker(
+              id: mapInfo.id,
+              position: NLatLng(
+                mapInfo.lat,
+                mapInfo.lng,
+              ),
+              icon: iconImage,
+            ));
+
+        controller.updateCamera(NCameraUpdate.scrollAndZoomTo(
+          target: NLatLng(
+            marker.position.latitude,
+            marker.position.longitude,
+          ),
+          zoom: 15,
+        ));
       });
 
       return marker;
@@ -217,9 +247,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
     List<NMarker> results = await Future.wait(modifiedList);
 
-    Set<NMarker> overlays = results.toSet();
+    overlays = results.toSet();
 
     controller.addOverlayAll(overlays);
+  }
+
+  void _onMarkerTap(NMarker marker, Map<String, int> iconSize) {
+    setState(() {
+      _selectedMarker = marker;
+    });
+  }
+
+  void updateMarker(Set<NMarker> markers, NMarker updatedMarker) async {
+    final NaverMapController controller = await _mapController.future;
+
+    controller.clearOverlays();
+
+    Set<NMarker> modifiedOverlays = markers.map((marker) {
+      if (marker.info.id == updatedMarker.info.id) {
+        return updatedMarker;
+      }
+      return marker;
+    }).toSet();
+
+    controller.addOverlayAll(modifiedOverlays);
   }
 
   Future<NOverlayImage> _getOverlayImage(String category) async {
