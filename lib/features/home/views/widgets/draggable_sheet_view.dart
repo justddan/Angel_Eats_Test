@@ -34,13 +34,11 @@ class _DraggableSheetViewState extends State<DraggableSheetView> {
     _scrollEndTimer = Timer(const Duration(milliseconds: 100), () {
       if (extent >= 0.5) {
         _controller.animateTo(1.0,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut);
+            duration: const Duration(milliseconds: 300), curve: Curves.linear);
         widget.onExtentChanged(1);
       } else if (extent < 0.5) {
         _controller.animateTo(0.0,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut);
+            duration: const Duration(milliseconds: 300), curve: Curves.linear);
         widget.onExtentChanged(0);
       }
     });
