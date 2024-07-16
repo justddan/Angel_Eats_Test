@@ -328,23 +328,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _toggleListView() {
-    if (_dragController.size == 0) {
+    if (sheetPostion.value == 0) {
       _dragController.animateTo(
         1,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
       );
+      sheetPostion.value = 1;
     } else {
       _dragController.animateTo(
         0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
       );
+      sheetPostion.value = 0;
     }
   }
 
   void updateButtonText(double extent) {
     sheetPostion.value = extent;
+    // _dragController.animateTo(
+    //   extent,
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.easeIn,
+    // );
   }
 
   @override

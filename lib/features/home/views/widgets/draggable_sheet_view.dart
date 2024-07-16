@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:angel_eats_test/constants/gaps.dart';
 import 'package:angel_eats_test/features/home/views/widgets/draggable_sheet_card.dart';
 import 'package:flutter/material.dart';
@@ -17,36 +19,32 @@ class DraggableSheetView extends StatefulWidget {
 }
 
 class _DraggableSheetViewState extends State<DraggableSheetView> {
-  final double _sheetPosition = 0.5;
+  double _sheetPosition = 0.5;
+  late DraggableScrollableController _controller;
+  Timer? _scrollEndTimer;
 
   @override
   void initState() {
     super.initState();
+    _controller = widget.controller;
   }
 
-  // 무한 반복( NotificationListener 활용 )
-  // void _handleScrollNotification(ScrollNotification notification) {
-  //   if (notification is ScrollEndNotification) {
-  //     if (widget.controller.size < 1) {
-  //       widget.controller.animateTo(
-  //         0,
-  //         duration: const Duration(milliseconds: 300),
-  //         curve: Curves.easeIn,
-  //       );
-  //     } else if (widget.controller.size > 0) {
-  //       widget.controller.animateTo(
-  //         1,
-  //         duration: const Duration(milliseconds: 300),
-  //         curve: Curves.easeIn,
-  //       );
-  //     }
-
-  //     setState(() {
-  //       _sheetPosition = widget.controller.size;
-  //     });
-  //     print('Scroll ended. Current extent: ${widget.controller.size}');
-  //   }
-  // }
+  void _handleScrollEnd(double extent) {
+    _scrollEndTimer?.cancel();
+    _scrollEndTimer = Timer(const Duration(milliseconds: 100), () {
+      if (extent >= 0.5) {
+        _controller.animateTo(1.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut);
+        widget.onExtentChanged(1);
+      } else if (extent < 0.5) {
+        _controller.animateTo(0.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut);
+        widget.onExtentChanged(0);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,42 +53,48 @@ class _DraggableSheetViewState extends State<DraggableSheetView> {
 
     return NotificationListener<DraggableScrollableNotification>(
       onNotification: (notification) {
-        widget.onExtentChanged(notification.extent);
+        _sheetPosition = notification.extent;
         return true;
       },
-      child: DraggableScrollableSheet(
-        controller: widget.controller,
-        initialChildSize: _sheetPosition,
-        minChildSize: minSize,
-        maxChildSize: maxSize,
-        builder: (context, scrollController) {
-          return Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(5),
-                topRight: Radius.circular(5),
-              ),
-              color: Colors.white,
-            ),
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: Column(
-                children: [
-                  const Grabber(),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return const DraggableSheetCard();
-                    },
-                    separatorBuilder: (context, index) => Gaps.v10,
-                    itemCount: 10,
-                  ),
-                ],
-              ),
-            ),
-          );
+      child: NotificationListener<ScrollEndNotification>(
+        onNotification: (notification) {
+          _handleScrollEnd(_sheetPosition);
+          return true;
         },
+        child: DraggableScrollableSheet(
+          controller: _controller,
+          initialChildSize: .5,
+          minChildSize: minSize,
+          maxChildSize: maxSize,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(5),
+                  topRight: Radius.circular(5),
+                ),
+                color: Colors.white,
+              ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  children: [
+                    const Grabber(),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return const DraggableSheetCard();
+                      },
+                      separatorBuilder: (context, index) => Gaps.v10,
+                      itemCount: 10,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
