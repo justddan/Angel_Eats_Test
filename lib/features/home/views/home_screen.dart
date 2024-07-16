@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:angel_eats_test/constants/gaps.dart';
 import 'package:angel_eats_test/features/home/views/widgets/draggable_sheet_view.dart';
 import 'package:angel_eats_test/features/home/views/widgets/naver_map_view.dart';
 import 'package:flutter/material.dart';
@@ -29,14 +30,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final Completer<NaverMapController> _mapController = Completer();
+  final ValueNotifier<NMarker?> _selectedMarker = ValueNotifier<NMarker?>(null);
   Position? currentPosition;
-  NMarker? _selectedMarker;
+  // NMarker? _selectedMarker;
 
   // Set<NAddableOverlay> overlays = {};
 
   final DraggableScrollableController _dragController =
       DraggableScrollableController();
-  double sheetPosition = 0.5;
+
+  final ValueNotifier<double> sheetPostion = ValueNotifier<double>(0.5);
 
   List<MarkerModel> mockMarkerData = [
     MarkerModel(
@@ -48,8 +51,26 @@ class _HomeScreenState extends State<HomeScreen> {
     MarkerModel(
       id: "marker-2",
       category: "cafe",
-      lat: 37.54,
-      lng: 126.96284784,
+      lat: 37.552,
+      lng: 126.962846,
+    ),
+    MarkerModel(
+      id: "marker-3",
+      category: "cafe",
+      lat: 37.554,
+      lng: 126.962846,
+    ),
+    MarkerModel(
+      id: "marker-4",
+      category: "cafe",
+      lat: 37.556,
+      lng: 126.962846,
+    ),
+    MarkerModel(
+      id: "marker-5",
+      category: "cafe",
+      lat: 37.558,
+      lng: 126.962846,
     ),
   ];
 
@@ -62,6 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _dragController.dispose();
+    sheetPostion.dispose();
+    _selectedMarker.dispose();
     super.dispose();
   }
 
@@ -94,10 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       icon: iconImage,
     );
-
-    // currentMarker.setOnTapListener((NMarker marker) {
-    //   print("마커가 터치되었습니다. id: ${marker.info.id}");
-    // });
 
     controller.addOverlay(currentMarker);
 
@@ -142,22 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return await Geolocator.getCurrentPosition();
-  }
-
-  void _toggleListView() {
-    if (_dragController.size == 0) {
-      _dragController.animateTo(
-        1,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeIn,
-      );
-    } else {
-      _dragController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeIn,
-      );
-    }
   }
 
   // 지도 준비 완료
@@ -208,30 +211,12 @@ class _HomeScreenState extends State<HomeScreen> {
           mapInfo.lat,
           mapInfo.lng,
         ),
-        icon: await _getOverlayImage(mapInfo.category),
+        icon: await _getOverlayImage(mapInfo),
       );
 
       // 마커 클릭 이벤트 설정
       marker.setOnTapListener((NMarker marker) async {
-        final iconImage = await NOverlayImage.fromWidget(
-          widget: const Icon(
-            Icons.emoji_nature,
-            color: Colors.green,
-          ),
-          size: const Size(24, 24),
-          context: context,
-        );
-
-        updateMarker(
-            overlays,
-            NMarker(
-              id: mapInfo.id,
-              position: NLatLng(
-                mapInfo.lat,
-                mapInfo.lng,
-              ),
-              icon: iconImage,
-            ));
+        _selectedMarker.value = marker;
 
         controller.updateCamera(NCameraUpdate.scrollAndZoomTo(
           target: NLatLng(
@@ -240,6 +225,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           zoom: 15,
         ));
+
+        _dragController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeIn,
+        );
       });
 
       return marker;
@@ -252,10 +243,10 @@ class _HomeScreenState extends State<HomeScreen> {
     controller.addOverlayAll(overlays);
   }
 
-  void _onMarkerTap(NMarker marker, Map<String, int> iconSize) {
-    setState(() {
-      _selectedMarker = marker;
-    });
+  void onTestTap() async {
+    final NaverMapController controller = await _mapController.future;
+
+    print(_selectedMarker);
   }
 
   void updateMarker(Set<NMarker> markers, NMarker updatedMarker) async {
@@ -273,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
     controller.addOverlayAll(modifiedOverlays);
   }
 
-  Future<NOverlayImage> _getOverlayImage(String category) async {
+  Future<NOverlayImage> _getOverlayImage(MarkerModel marker) async {
     // 카테고리 종류 API 호출 후 categories에 넣기
     final List<String> categories = [
       "cafe",
@@ -282,13 +273,34 @@ class _HomeScreenState extends State<HomeScreen> {
       "drink",
     ];
 
-    int categoryNum = categories.indexOf(category);
+    int categoryNum = categories.indexOf(marker.category);
 
     // 해당하는 asset 사진 넣기
     final List<Widget> icons = [
       const Icon(
         Icons.emoji_food_beverage_rounded,
         color: Colors.red,
+        size: 30,
+      ),
+      const Icon(
+        Icons.fastfood,
+        color: Colors.red,
+      ),
+      const Icon(
+        Icons.local_dining,
+        color: Colors.red,
+      ),
+      const Icon(
+        Icons.local_drink,
+        color: Colors.red,
+      ),
+    ];
+
+    final List<Widget> selectedIcons = [
+      const Icon(
+        Icons.emoji_food_beverage_rounded,
+        color: Colors.blue,
+        size: 30,
       ),
       const Icon(
         Icons.fastfood,
@@ -305,12 +317,34 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     final iconImage = await NOverlayImage.fromWidget(
-      widget: icons[categoryNum],
+      widget: marker.id == _selectedMarker.value?.info.id
+          ? selectedIcons[categoryNum]
+          : icons[categoryNum],
       size: const Size(24, 24),
       context: context,
     );
 
     return iconImage;
+  }
+
+  void _toggleListView() {
+    if (_dragController.size == 0) {
+      _dragController.animateTo(
+        1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
+    } else {
+      _dragController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
+    }
+  }
+
+  void updateButtonText(double extent) {
+    sheetPostion.value = extent;
   }
 
   @override
@@ -359,13 +393,54 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             DraggableSheetView(
               controller: _dragController,
+              onExtentChanged: updateButtonText,
             ),
+            Positioned(
+              bottom: 15,
+              right: 15,
+              child: GestureDetector(
+                onTap: _toggleListView,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(30),
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: ValueListenableBuilder(
+                      valueListenable: sheetPostion,
+                      builder: (context, extent, child) {
+                        return Row(
+                          children: [
+                            Icon(
+                              extent == 1
+                                  ? Icons.map_outlined
+                                  : Icons.menu_rounded,
+                              color: Colors.white,
+                            ),
+                            Gaps.h2,
+                            Text(
+                              extent == 1 ? "지도보기" : "목록보기",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                ),
+              ),
+            )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _toggleListView,
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _toggleListView,
+      //   // onPressed: onTestTap,
+      // ),
     );
   }
 }
