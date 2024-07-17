@@ -32,6 +32,8 @@ class NaverMapView extends StatelessWidget {
           zoom: 15,
         ),
         indoorEnable: false,
+        logoClickEnable: false,
+        rotationGesturesEnable: false,
         logoAlign: NLogoAlign.leftTop,
         extent: const NLatLngBounds(
           southWest: NLatLng(31.43, 122.37),

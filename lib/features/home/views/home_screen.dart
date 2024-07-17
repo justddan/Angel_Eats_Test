@@ -74,6 +74,53 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
   ];
 
+  final List<String> categories = [
+    "cafe",
+    "fastfood",
+    "dining",
+    "drink",
+  ];
+  // 해당하는 asset 사진 넣기
+  final List<Widget> icons = [
+    const Icon(
+      Icons.emoji_food_beverage_rounded,
+      color: Colors.red,
+      size: 30,
+    ),
+    const Icon(
+      Icons.fastfood,
+      color: Colors.red,
+    ),
+    const Icon(
+      Icons.local_dining,
+      color: Colors.red,
+    ),
+    const Icon(
+      Icons.local_drink,
+      color: Colors.red,
+    ),
+  ];
+
+  final List<Widget> selectedIcons = [
+    const Icon(
+      Icons.emoji_food_beverage_rounded,
+      color: Colors.blue,
+      size: 30,
+    ),
+    const Icon(
+      Icons.fastfood,
+      color: Colors.red,
+    ),
+    const Icon(
+      Icons.local_dining,
+      color: Colors.red,
+    ),
+    const Icon(
+      Icons.local_drink,
+      color: Colors.red,
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -164,8 +211,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // 지도 준비 완료
-  void onMapReady(NaverMapController controller) {
+  void onMapReady(NaverMapController controller) async {
     _mapController.complete(controller);
+
+    final nLocationOverlay = controller.getLocationOverlay();
+    nLocationOverlay
+        .setIcon(const NOverlayImage.fromAssetImage('assets/icons/test.png'));
+    nLocationOverlay.setIconSize(const Size(28.35, 28.35));
+    controller.setLocationTrackingMode(NLocationTrackingMode.noFollow);
   }
 
   // 지도 클릭
@@ -199,23 +252,36 @@ class _HomeScreenState extends State<HomeScreen> {
   void createMarkers(NLatLngBounds mapBounds) async {
     final NaverMapController controller = await _mapController.future;
 
-    Set<NMarker> overlays = {};
+    List<NMarker> overlays = [];
 
     // 생성할 마커 좌표 및 정보 API 호출
 
     // 범위 안의 마커들을 생성
     List<Future<NMarker>> modifiedList = mockMarkerData.map((mapInfo) async {
+      int categoryNum = categories.indexOf(mapInfo.category);
+
+      final iconImage = await NOverlayImage.fromWidget(
+        // widget: icons[categoryNum],
+        widget: mapInfo.id == _selectedMarker.value?.info.id
+            ? selectedIcons[categoryNum]
+            : icons[categoryNum],
+        size: const Size(24, 24),
+        context: context,
+      );
+
+      // const iconImage = NOverlayImage.fromAssetImage("/assets/icons/test.png");
+
       final marker = NMarker(
         id: mapInfo.id,
         position: NLatLng(
           mapInfo.lat,
           mapInfo.lng,
         ),
-        icon: await _getOverlayImage(mapInfo),
+        icon: iconImage,
       );
 
       // 마커 클릭 이벤트 설정
-      marker.setOnTapListener((NMarker marker) async {
+      marker.setOnTapListener((NMarker marker) {
         _selectedMarker.value = marker;
 
         controller.updateCamera(NCameraUpdate.scrollAndZoomTo(
@@ -236,11 +302,11 @@ class _HomeScreenState extends State<HomeScreen> {
       return marker;
     }).toList();
 
-    List<NMarker> results = await Future.wait(modifiedList);
+    List<Future<NMarker>> results = modifiedList;
 
-    overlays = results.toSet();
+    overlays = await Future.wait(results);
 
-    controller.addOverlayAll(overlays);
+    controller.addOverlayAll(overlays.toSet());
   }
 
   void onTestTap() async {
@@ -262,69 +328,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }).toSet();
 
     controller.addOverlayAll(modifiedOverlays);
-  }
-
-  Future<NOverlayImage> _getOverlayImage(MarkerModel marker) async {
-    // 카테고리 종류 API 호출 후 categories에 넣기
-    final List<String> categories = [
-      "cafe",
-      "fastfood",
-      "dining",
-      "drink",
-    ];
-
-    int categoryNum = categories.indexOf(marker.category);
-
-    // 해당하는 asset 사진 넣기
-    final List<Widget> icons = [
-      const Icon(
-        Icons.emoji_food_beverage_rounded,
-        color: Colors.red,
-        size: 30,
-      ),
-      const Icon(
-        Icons.fastfood,
-        color: Colors.red,
-      ),
-      const Icon(
-        Icons.local_dining,
-        color: Colors.red,
-      ),
-      const Icon(
-        Icons.local_drink,
-        color: Colors.red,
-      ),
-    ];
-
-    final List<Widget> selectedIcons = [
-      const Icon(
-        Icons.emoji_food_beverage_rounded,
-        color: Colors.blue,
-        size: 30,
-      ),
-      const Icon(
-        Icons.fastfood,
-        color: Colors.red,
-      ),
-      const Icon(
-        Icons.local_dining,
-        color: Colors.red,
-      ),
-      const Icon(
-        Icons.local_drink,
-        color: Colors.red,
-      ),
-    ];
-
-    final iconImage = await NOverlayImage.fromWidget(
-      widget: marker.id == _selectedMarker.value?.info.id
-          ? selectedIcons[categoryNum]
-          : icons[categoryNum],
-      size: const Size(24, 24),
-      context: context,
-    );
-
-    return iconImage;
   }
 
   void _toggleListView() {
