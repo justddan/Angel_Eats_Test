@@ -108,7 +108,7 @@ class Grabber extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: colorScheme.onSurface,
+      color: colorScheme.secondary,
       child: Align(
         alignment: Alignment.topCenter,
         child: Container(

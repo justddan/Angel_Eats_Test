@@ -8,6 +8,8 @@ class DraggableSheetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -24,7 +26,7 @@ class DraggableSheetCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Container(
-                      color: Colors.red,
+                      color: colorScheme.primary,
                       child: const Center(
                         child: Text(
                           "A",
@@ -45,7 +47,7 @@ class DraggableSheetCard extends StatelessWidget {
                         child: AspectRatio(
                           aspectRatio: 1,
                           child: Container(
-                            color: Colors.red,
+                            color: colorScheme.primary,
                             child: const Center(
                               child: Text(
                                 "B",
@@ -65,7 +67,7 @@ class DraggableSheetCard extends StatelessWidget {
                         child: AspectRatio(
                           aspectRatio: 1,
                           child: Container(
-                            color: Colors.red,
+                            color: colorScheme.primary,
                             child: const Center(
                               child: Text(
                                 "C",

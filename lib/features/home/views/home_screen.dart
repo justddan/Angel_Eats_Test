@@ -368,8 +368,37 @@ class _HomeScreenState extends State<HomeScreen> {
     // 5. DraggableScrollableSheet에서 조금만 내려도 시트 닫기
     // 6. 마커 줌 레벨 범위 정하기
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: colorScheme.primary,
+        title: const Text(
+          "홈페이지",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.shopping_cart_outlined,
+              color: Colors.white,
+            ),
+          ),
+        ],
+        centerTitle: false,
+      ),
       body: SafeArea(
         child: Stack(
           children: [

@@ -18,6 +18,18 @@ class BookmarkScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: colorScheme.primary,
+        title: const Text(
+          "찜하기",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(

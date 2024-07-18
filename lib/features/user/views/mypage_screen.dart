@@ -16,11 +16,13 @@ class MyPageScreen extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: colorScheme.primary,
           title: const Text(
             "마이페이지",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           actions: [
@@ -28,6 +30,7 @@ class MyPageScreen extends StatelessWidget {
               onPressed: () {},
               icon: const Icon(
                 Icons.settings_rounded,
+                color: Colors.white,
               ),
             ),
           ],
