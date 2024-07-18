@@ -1,7 +1,9 @@
 import 'package:angel_eats_test/common/widgets/main_navigation/main_navigation_screen.dart';
+import 'package:angel_eats_test/features/cart/views/cart_screen.dart';
 import 'package:angel_eats_test/features/detail/views/detail_screen.dart';
 import 'package:angel_eats_test/features/edit/views/edit_screen.dart';
 import 'package:angel_eats_test/features/history/views/history_detail_screen.dart';
+import 'package:angel_eats_test/features/payment/views/payment_screen.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
@@ -58,6 +60,16 @@ final router = GoRouter(
           name: EditScreen.routeName,
           path: EditScreen.routeURL,
           builder: (context, state) => const EditScreen(),
+        ),
+        GoRoute(
+          name: PaymentScreen.routeName,
+          path: PaymentScreen.routeURL,
+          builder: (context, state) => const PaymentScreen(),
+        ),
+        GoRoute(
+          name: CartScreen.routeName,
+          path: CartScreen.routeURL,
+          builder: (context, state) => const CartScreen(),
         ),
         // 팝업 시도
         // GoRoute(

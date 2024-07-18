@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:angel_eats_test/constants/gaps.dart';
+import 'package:angel_eats_test/features/cart/views/cart_screen.dart';
 import 'package:angel_eats_test/features/home/views/widgets/draggable_sheet_view.dart';
 import 'package:angel_eats_test/features/home/views/widgets/naver_map_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 
 class MarkerModel {
   final String id;
@@ -357,6 +359,10 @@ class _HomeScreenState extends State<HomeScreen> {
     // );
   }
 
+  void _onCartTap() {
+    context.pushNamed(CartScreen.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO
@@ -390,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: _onCartTap,
             icon: const Icon(
               Icons.shopping_cart_outlined,
               color: Colors.white,
