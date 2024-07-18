@@ -380,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         title: const Text(
-          "홈페이지",
+          "홈",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,

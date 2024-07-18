@@ -35,7 +35,7 @@ class BookmarkListItem extends StatelessWidget {
               aspectRatio: 1,
               child: Container(
                 decoration: BoxDecoration(
-                  color: colorScheme.onSurface,
+                  color: colorScheme.primary,
                   borderRadius: const BorderRadius.all(
                     Radius.circular(10),
                   ),

@@ -47,7 +47,7 @@ class MyPageScreen extends StatelessWidget {
                       aspectRatio: 1,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black,
+                          color: colorScheme.primary,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       ),
@@ -119,15 +119,16 @@ class MyPageScreen extends StatelessWidget {
               IntrinsicHeight(
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         children: [
                           Icon(
                             Icons.receipt_long_outlined,
                             size: 32,
+                            color: colorScheme.primary,
                           ),
                           Gaps.v5,
-                          Text(
+                          const Text(
                             "주문내역",
                           ),
                         ],
@@ -139,15 +140,13 @@ class MyPageScreen extends StatelessWidget {
                         color: colorScheme.primary.withOpacity(.2),
                       ),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         children: [
-                          Icon(
-                            Icons.favorite,
-                            size: 32,
-                          ),
+                          Icon(Icons.favorite,
+                              size: 32, color: colorScheme.primary),
                           Gaps.v5,
-                          Text(
+                          const Text(
                             "나의 찜",
                           ),
                         ],
@@ -161,15 +160,16 @@ class MyPageScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         children: [
                           Icon(
                             Icons.message,
                             size: 32,
+                            color: colorScheme.primary,
                           ),
                           Gaps.v5,
-                          Text(
+                          const Text(
                             "리뷰관리",
                           ),
                         ],
