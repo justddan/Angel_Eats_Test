@@ -57,57 +57,60 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  Offstage(
-                    offstage: _selectedIndex != 0,
-                    child: const HomeScreen(),
-                  ),
-                  Offstage(
-                    offstage: _selectedIndex != 1,
-                    child: const BookmarkScreen(),
-                  ),
-                  Offstage(
-                    offstage: _selectedIndex != 2,
-                    child: const HistoryScreen(),
-                  ),
-                  Offstage(
-                    offstage: _selectedIndex != 3,
-                    child: const MyPageScreen(),
-                  )
-                ],
-              ),
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                Offstage(
+                  offstage: _selectedIndex != 0,
+                  child: const HomeScreen(),
+                ),
+                Offstage(
+                  offstage: _selectedIndex != 1,
+                  child: const BookmarkScreen(),
+                ),
+                Offstage(
+                  offstage: _selectedIndex != 2,
+                  child: const HistoryScreen(),
+                ),
+                Offstage(
+                  offstage: _selectedIndex != 3,
+                  child: const MyPageScreen(),
+                )
+              ],
             ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map_rounded),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border_rounded),
-              label: 'Bookmark',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_rounded),
-              label: 'History',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'MyPage',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: colorScheme.primary,
-          unselectedItemColor: colorScheme.onSurfaceVariant,
-          onTap: _onTap,
-          backgroundColor: colorScheme.surface,
-        ));
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map_rounded),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite_border_rounded),
+            label: 'Bookmark',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_rounded),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'MyPage',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: colorScheme.secondary,
+        onTap: _onTap,
+        backgroundColor: colorScheme.surface,
+        iconSize: 25,
+      ),
+    );
   }
 }

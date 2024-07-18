@@ -81,6 +81,7 @@ class _DraggableSheetViewState extends State<DraggableSheetView> {
                     ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(5),
                       itemBuilder: (context, index) {
                         return const DraggableSheetCard();
                       },

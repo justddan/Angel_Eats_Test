@@ -418,8 +418,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: GestureDetector(
                 onTap: _goToCurrentLocation,
                 child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(10),
@@ -440,9 +440,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: GestureDetector(
                 onTap: _toggleListView,
                 child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.all(
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                    borderRadius: const BorderRadius.all(
                       Radius.circular(30),
                     ),
                   ),
